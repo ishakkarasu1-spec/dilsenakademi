@@ -31,6 +31,10 @@ const translations = {
 const langButtons = document.querySelectorAll('.lang-switch button');
 const menuToggle = document.getElementById('menuToggle');
 const mainNav = document.getElementById('mainNav');
+const heroGallery = document.getElementById('heroGallery');
+const galleryPrev = document.querySelector('[data-gallery-prev]');
+const galleryNext = document.querySelector('[data-gallery-next]');
+const galleryDots = document.querySelectorAll('[data-gallery-dot]');
 
 function setLanguage(lang){
   document.documentElement.lang = lang;
@@ -46,4 +50,23 @@ function setLanguage(lang){
 langButtons.forEach(btn => btn.addEventListener('click', () => setLanguage(btn.dataset.lang)));
 menuToggle.addEventListener('click', () => mainNav.classList.toggle('open'));
 mainNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mainNav.classList.remove('open')));
+
+let galleryIndex = 0;
+
+function showGallerySlide(index){
+  if(!heroGallery) return;
+  const total = heroGallery.children.length;
+  galleryIndex = (index + total) % total;
+  heroGallery.style.transform = `translateX(-${galleryIndex * 100}%)`;
+  galleryDots.forEach((dot, dotIndex) => {
+    dot.classList.toggle('active', dotIndex === galleryIndex);
+    dot.setAttribute('aria-current', dotIndex === galleryIndex ? 'true' : 'false');
+  });
+}
+
+if(galleryPrev) galleryPrev.addEventListener('click', () => showGallerySlide(galleryIndex - 1));
+if(galleryNext) galleryNext.addEventListener('click', () => showGallerySlide(galleryIndex + 1));
+galleryDots.forEach(dot => dot.addEventListener('click', () => showGallerySlide(Number(dot.dataset.galleryDot))));
+showGallerySlide(0);
+
 setLanguage(localStorage.getItem('dilsen-lang') || 'tr');
